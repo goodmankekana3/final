@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You ❤️</title>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+}
+
+/* Background slideshow */
+.background {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    animation: zoom 20s infinite alternate;
+    transition: background-image 2s ease-in-out;
+    filter: blur(6px) brightness(0.6);
+    z-index: -2;
+}
+
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom right, rgba(255,0,150,0.3), rgba(0,0,0,0.7));
+    z-index: -1;
+}
+
+@keyframes zoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+.screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+}
+
+h2 {
+    max-width: 90%;
+    font-weight: 400;
+}
+
+button {
+    padding: 15px 35px;
+    font-size: 18px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.1);
+}
+
+#startBtn { background: white; color: hotpink; }
+#continueBtn { margin-top: 20px; background: #ffffffcc; }
+#yesBtn { background: hotpink; color: white; }
+#noBtn { background: #333; color: white; position: absolute; }
+
+.hidden { display: none; }
+
+.heart {
+    position: absolute;
+    animation: float 6s linear infinite;
+}
+
+@keyframes float {
+    from { transform: translateY(100vh); opacity: 1; }
+    to { transform: translateY(-10vh); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="background" id="bg"></div>
+<div class="overlay"></div>
+
+<div id="startScreen" class="screen">
+    <button id="startBtn">Tap To Start ❤️</button>
+</div>
+
+<div id="messageScreen" class="screen hidden">
+    <h2 id="messageText"></h2>
+    <button id="continueBtn">Continue</button>
+</div>
+
+<div id="finalScreen" class="screen hidden">
+    <h2>Will You Be My Valentine? ❤️</h2>
+    <div style="margin-top:40px; position:relative; height:200px;">
+        <button id="yesBtn">YES 💖</button>
+        <button id="noBtn">NO 😏</button>
+    </div>
+</div>
+
+<div id="musicContainer"></div>
+
+<script>
+const VIDEO_ID = "PASTE_VIDEO_ID_HERE";
+
+const images = ["pic1.jpg", "pic2.jpg", "pic3.jpg"];
+let bgIndex = 0;
+
+const messages = [
+    "Okay… I’m slightly nervous you’re seeing this.",
+    "But I needed you to know something.",
+    "You make ordinary days feel different.",
+    "Like they carry more color.",
+    "Like they mean more.",
+    "Like everything just makes seeeenseee.",
+    "You being mine makes SEEEENSEEE."
+];
+
+let index = 0;
+
+const bg = document.getElementById("bg");
+const startBtn = document.getElementById("startBtn");
+const startScreen = document.getElementById("startScreen");
+const messageScreen = document.getElementById("messageScreen");
+const finalScreen = document.getElementById("finalScreen");
+const messageText = document.getElementById("messageText");
+const continueBtn = document.getElementById("continueBtn");
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+
+/* Background slideshow */
+function changeBackground(){
+    bg.style.backgroundImage = `url(${images[bgIndex]})`;
+    bgIndex = (bgIndex + 1) % images.length;
+}
+changeBackground();
+setInterval(changeBackground, 8000);
+
+startBtn.onclick = () => {
+
+    document.getElementById("musicContainer").innerHTML =
+        `<iframe width="0" height="0"
+        src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&loop=1&playlist=${VIDEO_ID}"
+        frameborder="0"
+        allow="autoplay">
+        </iframe>`;
+
+    startScreen.classList.add("hidden");
+    messageScreen.classList.remove("hidden");
+    messageText.innerText = messages[index];
+    createHearts();
+};
+
+continueBtn.onclick = () => {
+    index++;
+    if(index < messages.length){
+        messageText.innerText = messages[index];
+    } else {
+        messageScreen.classList.add("hidden");
+        finalScreen.classList.remove("hidden");
+        moveNoButton();
+    }
+};
+
+/* Hearts */
+function createHearts(){
+    setInterval(() => {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = Math.random() * 25 + 15 + "px";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 6000);
+    }, 300);
+}
+
+/* Circular moving NO button */
+let angle = 0;
+function moveNoButton(){
+    setInterval(() => {
+        angle += 0.1;
+        const radius = 80;
+        const x = radius * Math.cos(angle);
+        const y = radius * Math.sin(angle);
+        noBtn.style.transform = `translate(${x}px, ${y}px)`;
+    }, 20);
+}
+
+/* Confetti on YES */
+yesBtn.onclick = () => {
+    alert("You just made me the happiest person alive ❤️");
+    for(let i=0;i<100;i++){
+        const confetti = document.createElement("div");
+        confetti.innerHTML="💖";
+        confetti.style.position="absolute";
+        confetti.style.left=Math.random()*100+"vw";
+        confetti.style.top="-10px";
+        confetti.style.fontSize="20px";
+        confetti.style.animation="float 4s linear";
+        document.body.appendChild(confetti);
+        setTimeout(()=>confetti.remove(),4000);
+    }
+};
+</script>
+
+</body>
+</html>
